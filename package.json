@@ -43,6 +43,7 @@
       "package.json"
     ],
     "asar": true,
+    "publish": null,
     "win": {
       "target": [
         "nsis"
