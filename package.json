@@ -1,3 +1,4 @@
+
 {
   "name": "universal-computers-pos",
   "version": "1.2.1",
@@ -7,11 +8,11 @@
   "scripts": {
     "dev": "vite",
     "check": "tsc --noEmit && tsc -p electron/tsconfig.json --noEmit",
-    "build": "npm run check && vite build && tsc -p electron/tsconfig.json && electron-builder --win nsis --x64 --ia32",
+    "build": "npm run check && vite build && tsc -p electron/tsconfig.json",
     "build:renderer": "npm run check && vite build && tsc -p electron/tsconfig.json",
     "start": "electron .",
-    "package": "electron-builder --dir",
-    "dist": "electron-builder --win nsis"
+    "package": "electron-builder --dir --publish never",
+    "dist": "electron-builder --win nsis --publish never"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",
