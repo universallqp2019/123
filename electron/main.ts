@@ -14,9 +14,11 @@ const dbPath = () =>
 
 function initDb() {
   fs.mkdirSync(path.dirname(dbPath()), { recursive: true });
+
   db = new Database(dbPath());
   db.pragma('journal_mode=WAL');
   db.pragma('foreign_keys=ON');
+
   migrate(db);
   api = registerServices(db);
 }
@@ -63,28 +65,28 @@ function restore() {
 }
 
 function registerIpc() {
-  const h: Record<string, Electron.IpcMainInvokeListener> = {
+  const h: Record<string, (...args: any[]) => any> = {
     products: () => api.listProducts(),
-    productSave: (_e, p) => api.saveProduct(p),
+    productSave: (_e: any, p: any) => api.saveProduct(p),
     customers: () => api.listCustomers(),
-    customerSave: (_e, c) => api.saveCustomer(c),
-    saleCreate: (_e, s) => api.createSale(s),
+    customerSave: (_e: any, c: any) => api.saveCustomer(c),
+    saleCreate: (_e: any, s: any) => api.createSale(s),
     sales: () => api.sales(),
-    saleDetail: (_e, id) => api.saleDetail(id),
+    saleDetail: (_e: any, id: number) => api.saleDetail(id),
     dashboard: () => api.dashboard(),
-    customerPayment: (_e, p) => api.addCustomerPayment(p),
-    customerLedger: (_e, id) => api.customerLedger(id),
-    saleVoid: (_e, id) => api.voidSale(id),
+    customerPayment: (_e: any, p: any) => api.addCustomerPayment(p),
+    customerLedger: (_e: any, id: number) => api.customerLedger(id),
+    saleVoid: (_e: any, id: number) => api.voidSale(id),
     expenses: () => api.expenses(),
-    expenseAdd: (_e, e) => api.addExpense(e),
-    report: (_e, r) => api.report(r.from, r.to),
+    expenseAdd: (_e: any, e: any) => api.addExpense(e),
+    report: (_e: any, r: any) => api.report(r.from, r.to),
     backup: () => backup(),
     restore: () => restore()
   };
 
-  Object.entries(h).forEach(([k, v]) => {
-    ipcMain.handle(k, v);
-  });
+  for (const [k, v] of Object.entries(h)) {
+    ipcMain.handle(k, (event, ...args) => v(event, ...args));
+  }
 }
 
 function createWindow() {
