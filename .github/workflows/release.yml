@@ -9,9 +9,11 @@ on:
 
 jobs:
   build:
+    name: Windows ${{ matrix.arch }}
     runs-on: windows-latest
 
     strategy:
+      fail-fast: false
       matrix:
         arch: [x64, ia32]
 
@@ -22,8 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
 
       - name: Install Dependencies
         run: npm install
@@ -39,3 +40,4 @@ jobs:
         with:
           name: Universal-Computers-POS-${{ matrix.arch }}
           path: dist/*.exe
+          if-no-files-found: error
